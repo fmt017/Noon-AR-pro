@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noon AR Pro - Virtual Try-On Subscription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FFD700; /* Gold/Yellow */
+            --primary-dark: #FFC000; /* Darker yellow */
+            --primary-light: #FFFACD; /* Light yellow */
+            --dark: #333333; /* Dark gray for text */
+            --light: #FFFFFF; /* Pure white */
+            --gray: #777777; /* Medium gray */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--light);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        
+        .logo span {
+            color: var(--dark);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-dark);
+        }
+        
+        .cta-button {
+            background-color: var(--primary-dark);
+            color: var(--dark);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            margin-top: 80px;
+            background: linear-gradient(rgba(255,255,255,0.95), rgba(255,255,255,0.95)), 
+                        url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+        }
+        
+        .hero-content {
+            max-width: 600px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--gray);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        /* Features Section */
+        .section {
+            padding: 5rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .tab-button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--light);
+            border: 1px solid var(--primary-light);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary-dark);
+            color: var(--dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .tab-button:hover:not(.active) {
+            background-color: var(--primary-light);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .feature-demo {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .feature-demo img {
+            width: 100%;
+            display: block;
+        }
+        
+        .feature-description {
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* How It Works Section */
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-dark);
+            color: var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .step h3 {
+            margin-bottom: 1rem;
+        }
+        
+        /* Pricing Section */
+        .pricing-card {
+            background-color: var(--light);
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(255,215,0,0.1);
+            text-align: center;
+            position: relative;
+            border: 2px solid var(--primary-light);
+        }
+        
+        .pricing-card h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 2rem;
+        }
+        
+        .price span {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+        
+        .features-list {
+            text-align: left;
+            margin-bottom: 3rem;
+        }
+        
+        .features-list li {
+            margin-bottom: 1rem;
+            list-style-type: none;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .features-list li:before {
+            content: "✓";
+            color: var(--primary-dark);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .pricing-note {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        /* FAQ Section */
+        .faq-item {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--primary-light);
+            max-width: 800px;
+            margin: 0 auto 1rem;
+        }
+        
+        .faq-question {
+            padding: 1.5rem 0;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding-bottom: 1.5rem;
+            color: var(--gray);
+            display: none;
+        }
+        
+        .faq-answer.show {
+            display: block;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: var(--light);
+            padding: 4rem 5% 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        .footer-column ul {
+            list-style-type: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-column a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: var(--primary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            color: var(--primary);
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: var(--primary-light);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--light);
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            border: 2px solid var(--primary-light);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--dark);
+        }
+        
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-method:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .payment-method i {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            color: var(--primary-dark);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .steps {
+                flex-direction: column;
+            }
+            
+            .features-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">Noon <span>AR Pro</span></div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#faq">FAQ</a>
+            </div>
+            <button class="cta-button" id="open-signup">Start Free Trial</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>See it, try it, love it - right from home</h1>
+            <p>Try clothes, furniture & more in AR—before you buy. Only AED 19/month.</p>
+            <div class="hero-buttons">
+                <button class="cta-button" id="hero-signup">Start 7-Day Free Trial</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-title">
+            <h2>Shop With Confidence</h2>
+            <p>Noon AR Pro gives you the tools to make perfect purchases every time</p>
+        </div>
+        
+        <div class="features-tabs">
+            <button class="tab-button active" data-tab="virtual-tryon">Virtual Try-On</button>
+            <button class="tab-button" data-tab="smart-sizing">Smart Sizing</button>
+            <button class="tab-button" data-tab="ai-stylist">AI Stylist</button>
+            <button class="tab-button" data-tab="tryon-history">Try-On History</button>
+        </div>
+        
+        <div class="tab-content active" id="virtual-tryon">
+            <div class="feature-demo">
+                <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80" alt="Virtual Try-On Demo">
+            </div>
+            <div class="feature-description">
+                <h3>Virtual Try-On</h3>
+                <p>See how any clothing item or furniture piece looks on you or in your space before buying. Our AR technology creates a realistic preview using your device's camera.</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="smart-sizing">
+            <div class="feature-demo">
+                <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Smart Sizing Demo">
+            </div>
+            <div class="feature-description">
+                <h3>Smart Sizing</h3>
+                <p>Our AI analyzes your body measurements or room dimensions to recommend the perfect size every time. Never worry about wrong sizes again.</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="ai-stylist">
+            <div class="feature-demo">
+                <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="AI Stylist Demo">
+            </div>
+            <div class="feature-description">
+                <h3>AI Stylist</h3>
+                <p>Get personalized recommendations based on your style preferences, past purchases, and current trends. Discover new looks you'll love.</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="tryon-history">
+            <div class="feature-demo">
+                <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Try-On History Demo">
+            </div>
+            <div class="feature-description">
+                <h3>Try-On History</h3>
+                <p>Save and organize all your virtual try-ons in one place. Compare different options and share with friends for feedback before purchasing.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section" id="how-it-works">
+        <div class="section-title">
+            <h2>How Noon AR Pro Works</h2>
+            <p>Get started in just three simple steps</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Subscribe</h3>
+                <p>Sign up for Noon AR Pro with our 7-day free trial (just AED 19/month after).</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Open Camera</h3>
+                <p>Tap the AR button on any eligible product in the Noon app.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Try & Decide</h3>
+                <p>See items in your space or on your body in real-time—shop with confidence!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section" id="pricing">
+        <div class="section-title">
+            <h2>Simple, Affordable Pricing</h2>
+            <p>All the AR shopping tools you need for less than your daily coffee</p>
+        </div>
+        <div class="pricing-card">
+            <h3>Noon AR Pro</h3>
+            <div class="price">AED 19 <span>/month</span></div>
+            <ul class="features-list">
+                <li>Unlimited AR try-ons for clothes & furniture</li>
+                <li>Smart sizing assistant</li>
+                <li>AI-powered styling suggestions</li>
+                <li>Try-on history & favorites</li>
+                <li>Exclusive AR-only discounts</li>
+            </ul>
+            <button class="cta-button" id="pricing-signup">Start Free Trial</button>
+            <p class="pricing-note">Cancel anytime. 7-day free trial included.</p>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section" id="faq">
+        <div class="section-title">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about Noon AR Pro</p>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Which items can I try in AR?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>Currently, you can try on clothing, shoes, accessories, furniture, and select electronics. We're adding new categories every month! Look for the "AR Try-On" badge on product pages.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Is my size data stored securely?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>Yes! We use bank-grade encryption for all your measurements and never share your data with third parties. You can delete your sizing history anytime in the app settings.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>What if I don't like it?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>No problem! You can cancel your subscription anytime during the free trial and you won't be charged. After the trial, you still have complete flexibility to cancel with one click.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>How does the free trial work?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>When you sign up, you get 7 days of full access to Noon AR Pro. If you don't cancel before the trial ends, your subscription will automatically continue for AED 19/month. We'll send you reminders before the trial ends.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Noon AR Pro</h3>
+                <p>The future of confident online shopping is here. Try before you buy with augmented reality.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Download</h3>
+                <p>Get the Noon app to start your AR shopping experience.</p>
+                <div style="margin-top: 1rem;">
+                    <button class="cta-button" style="margin-bottom: 0.5rem; width: 100%;">
+                        <i class="fab fa-apple"></i> App Store
+                    </button>
+                    <button class="cta-button" style="width: 100%;">
+                        <i class="fab fa-google-play"></i> Google Play
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2025 Noon AR Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signup-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">&times;</button>
+            <h2>Start Your Free Trial</h2>
+            <p>Get 7 days of Noon AR Pro for free. Cancel anytime.</p>
+            
+            <div class="payment-methods">
+                <div class="payment-method">
+                    <i class="fab fa-cc-visa"></i>
+                    <div>
+                        <h4>Credit/Debit Card</h4>
+                        <p>Visa, Mastercard, Mada, and more</p>
+                    </div>
+                </div>
+                <div class="payment-method">
+                    <i class="fas fa-wallet"></i>
+                    <div>
+                        <h4>Noon Pay</h4>
+                        <p>Use your Noon Pay balance</p>
+                    </div>
+                </div>
+                <div class="payment-method">
+                    <i class="fab fa-apple"></i>
+                    <div>
+                        <h4>Apple Pay</h4>
+                        <p>Secure payment with Face ID</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="cta-button" style="width: 100%; margin-top: 1rem;">Subscribe Now</button>
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.8rem;">
+                By subscribing, you agree to our <a href="#" style="color: var(--primary-dark);">Terms</a> and <a href="#" style="color: var(--primary-dark);">Privacy Policy</a>.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+                
+                answer.classList.toggle('show');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+        
+        // Modal Handling
+        const modal = document.getElementById('signup-modal');
+        const openButtons = document.querySelectorAll('.cta-button, #open-signup');
+        const closeButton = document.getElementById('close-modal');
+        
+        openButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Feature Tabs
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
